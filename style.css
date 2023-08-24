@@ -1,0 +1,40 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background-color: #cdeaf5;
+
+}
+
+.container {
+    /* width: 960px; */
+    /*width of container */
+    margin: auto;
+    /*centering*/
+    text-align: center;
+
+}
+
+h1 {
+    text-align: center;
+    font-weight: normal;
+    font-size: 60px;
+    margin: 0;
+    height: 150px;
+    /* justify-content: space-between; */
+    padding: 40px;
+    /* padding-bottom: 20px; */
+}
+
+
+
+/*styling section */
+section {
+    max-width: 80%;
+    margin: auto;
+    line-height: 2em;
+    padding: 40px;
+    color: #1c1c1c;
+    font-family: Arial, sans-serif;
+    font-size: 30px;
+}
