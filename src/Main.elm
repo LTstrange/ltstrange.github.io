@@ -1,6 +1,9 @@
 module Main exposing (main)
 import Html exposing (..)
-import Browser
+-- import Browser
 
 
-main = text "Hello World"
+main = div [] [
+    h1 [] [text "Welcome to my World!"],
+    p [] [text "This is LTstrange!"]
+    ]
