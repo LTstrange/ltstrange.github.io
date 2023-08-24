@@ -4419,29 +4419,55 @@ var $elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
 			return 3;
 	}
 };
+var $elm$json$Json$Encode$string = _Json_wrap;
+var $elm$html$Html$Attributes$stringProperty = F2(
+	function (key, string) {
+		return A2(
+			_VirtualDom_property,
+			key,
+			$elm$json$Json$Encode$string(string));
+	});
+var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
 var $elm$html$Html$div = _VirtualDom_node('div');
 var $elm$html$Html$h1 = _VirtualDom_node('h1');
+var $elm$html$Html$header = _VirtualDom_node('header');
 var $elm$html$Html$p = _VirtualDom_node('p');
+var $elm$html$Html$section = _VirtualDom_node('section');
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
 var $author$project$Main$main = A2(
 	$elm$html$Html$div,
-	_List_Nil,
+	_List_fromArray(
+		[
+			$elm$html$Html$Attributes$class('container')
+		]),
 	_List_fromArray(
 		[
 			A2(
-			$elm$html$Html$h1,
+			$elm$html$Html$header,
 			_List_Nil,
 			_List_fromArray(
 				[
-					$elm$html$Html$text('Welcome to my World!')
+					A2(
+					$elm$html$Html$h1,
+					_List_Nil,
+					_List_fromArray(
+						[
+							$elm$html$Html$text('Welcome to my World!')
+						]))
 				])),
 			A2(
-			$elm$html$Html$p,
+			$elm$html$Html$section,
 			_List_Nil,
 			_List_fromArray(
 				[
-					$elm$html$Html$text('This is LTstrange!')
+					A2(
+					$elm$html$Html$p,
+					_List_Nil,
+					_List_fromArray(
+						[
+							$elm$html$Html$text('This is LTstrange!')
+						]))
 				]))
 		]));
 _Platform_export({'Main':{'init':_VirtualDom_init($author$project$Main$main)(0)(0)}});}(this));
