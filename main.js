@@ -4433,6 +4433,7 @@ var $elm$html$Html$div = _VirtualDom_node('div');
 var $elm$html$Html$h1 = _VirtualDom_node('h1');
 var $elm$html$Html$h2 = _VirtualDom_node('h2');
 var $elm$html$Html$h3 = _VirtualDom_node('h3');
+var $elm$html$Html$h4 = _VirtualDom_node('h4');
 var $elm$html$Html$header = _VirtualDom_node('header');
 var $elm$html$Html$img = _VirtualDom_node('img');
 var $elm$html$Html$p = _VirtualDom_node('p');
@@ -4480,11 +4481,39 @@ var $author$project$Main$main = A2(
 							$elm$html$Html$text('This is LTstrange!')
 						])),
 					A2(
+					$elm$html$Html$h4,
+					_List_Nil,
+					_List_fromArray(
+						[
+							$elm$html$Html$text('Welcome to my website!')
+						])),
+					A2(
 					$elm$html$Html$p,
 					_List_Nil,
 					_List_fromArray(
 						[
-							$elm$html$Html$text('welcome to my website!')
+							$elm$html$Html$text(' where I explore a world of coding, game development, language design, and operating systems.')
+						])),
+					A2(
+					$elm$html$Html$p,
+					_List_Nil,
+					_List_fromArray(
+						[
+							$elm$html$Html$text('I am good at languages like C, C#, Rust, and Python,')
+						])),
+					A2(
+					$elm$html$Html$p,
+					_List_Nil,
+					_List_fromArray(
+						[
+							$elm$html$Html$text('and I\'ve even crafted my own programming language called Siren.')
+						])),
+					A2(
+					$elm$html$Html$p,
+					_List_Nil,
+					_List_fromArray(
+						[
+							$elm$html$Html$text('Check out my github repository!')
 						])),
 					A2(
 					$elm$html$Html$h2,
