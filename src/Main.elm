@@ -13,6 +13,7 @@ main = div [ class "container"]
         -- Show up
         , img [src "./assets/logo.svg", alt "logo"] []
         , h3 [] [text "This is LTstrange!"]
+        ,p [] [text "welcome to my website!"]
         
         -- Info
         , h2 [] [text "Info"]

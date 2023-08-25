@@ -4480,6 +4480,13 @@ var $author$project$Main$main = A2(
 							$elm$html$Html$text('This is LTstrange!')
 						])),
 					A2(
+					$elm$html$Html$p,
+					_List_Nil,
+					_List_fromArray(
+						[
+							$elm$html$Html$text('welcome to my website!')
+						])),
+					A2(
 					$elm$html$Html$h2,
 					_List_Nil,
 					_List_fromArray(
