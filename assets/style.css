@@ -62,3 +62,7 @@ img {
 p {
     user-select: text;
 }
+
+a {
+    color: black
+}
