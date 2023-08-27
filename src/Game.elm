@@ -39,7 +39,7 @@ type Msg
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model
   = case msg of
-      Reroll _ -> if model.count < 100
+      Reroll _ -> if model.count < 10
         then ({model | count = model.count + 1},  Random.generate Change (Random.map2 State roll roll))
         else ({model | rolling = False}, Cmd.none)
       Change s -> ( { model | state=s}, Cmd.none)
@@ -78,4 +78,4 @@ rpsToPath rps
 
 subscriptions : Model -> Sub Msg
 subscriptions model
-  = if model.rolling then Time.every 10 Reroll else Sub.none
+  = if model.rolling then Time.every 100 Reroll else Sub.none
