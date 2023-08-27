@@ -1,21 +1,10 @@
 module Main exposing (main)
+
 import Html exposing (..)
 import Html.Attributes exposing (class, src, alt, href)
 import Browser
 import Url
 import Browser.Navigation as Nav
-
-
--- MAIN
-main : Program () Model Msg
-main = Browser.application 
-    { init = init
-    , update = update
-    , view = view
-    , subscriptions = \_ -> Sub.none
-    , onUrlChange = UrlChanged
-    , onUrlRequest = LinkClicked
-    }
 
 
 -- MODEL
@@ -55,21 +44,10 @@ view : Model -> Browser.Document Msg
 view model =
   { title = "URL Interceptor"
   , body =
-      [ text "The current URL is: "
-      , b [] [ text (Url.toString model.url) ]
-      , ul []
-          [ viewLink "/home"
-          , viewLink "/profile"
-          , viewLink "/reviews/the-century-of-the-self"
-          , viewLink "/reviews/public-opinion"
-          , viewLink "/reviews/shah-of-shahs"
-          ]
+      [ mainPage
       ]
   }
 
-viewLink : String -> Html msg
-viewLink path =
-  li [] [ a [ href path ] [ text path ] ]
 
 mainPage : Html msg
 mainPage = div [ class "container"] 
@@ -91,3 +69,14 @@ mainPage = div [ class "container"]
         ]
     ]
 
+
+-- MAIN
+main : Program () Model Msg
+main = Browser.application 
+    { init = init
+    , update = update
+    , view = view
+    , subscriptions = \_ -> Sub.none
+    , onUrlChange = UrlChanged
+    , onUrlRequest = LinkClicked
+    }
