@@ -28,6 +28,16 @@ parseUrl url = case Parser.parse parseRoute url of
   Just r -> r
   Nothing -> NotFoundPage
 
+routeToSubModel: Route -> (SubModel, Cmd Msg)
+routeToSubModel route = case route of
+      HomePage -> (HomeModel, Cmd.none)
+      GamePage -> 
+        let
+          (game_model, game_cmd) = Game.init
+        in 
+          (GameModel game_model, Cmd.map GotGameMsg game_cmd)
+      NotFoundPage -> (NotFoundModel, Cmd.none)
+
 -- MODEL
 
 type SubModel
@@ -43,18 +53,9 @@ type alias Model =
 init : () -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
 init _ url key =
   let
-    route = parseUrl url
-    (subModel, c) = case route of
-      HomePage -> (HomeModel, Cmd.none)
-      GamePage -> 
-        let
-          (game_model, game_cmd) = Game.init
-        in 
-          (GameModel game_model, Cmd.map GotGameMsg game_cmd)
-      NotFoundPage -> (NotFoundModel, Cmd.none)
-    model = Model key subModel
+    (subModel, c) = routeToSubModel (parseUrl url)
   in
-  ( model, c )
+    ( Model key subModel, c )
 
 
 -- UPDATE
@@ -66,6 +67,8 @@ type Msg
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
   case (msg, model.subModel) of
+
+  -- LinkClicked
     (LinkClicked urlRequest, _) ->
       case urlRequest of
         Browser.Internal url ->
@@ -73,24 +76,22 @@ update msg model =
         Browser.External href ->
           ( model, Nav.load href )
 
+    -- UrlChanged
     (UrlChanged url, _) ->
       let
-        (submodel, cmd) =  case parseUrl url of
-          HomePage -> (HomeModel, Cmd.none)
-          GamePage -> 
-            let
-              (game_model, game_cmd) = Game.init
-            in 
-            (GameModel game_model, Cmd.map GotGameMsg game_cmd)
-          NotFoundPage -> (NotFoundModel, Cmd.none)
+        (submodel, cmd) =  routeToSubModel (parseUrl url)
       in
       ( {model| subModel = submodel}, cmd )
+
+    -- Message Handling
     (GotGameMsg gameMsg, GameModel m) -> 
       let 
         (newM, c) = Game.update gameMsg m 
         cmd = Cmd.map GotGameMsg c
       in
         ({ model | subModel = (GameModel newM )}, cmd)
+
+    -- Ignore when message not match model
     (_, _) -> (model, Cmd.none)
 
 
@@ -100,15 +101,11 @@ view model =
   case model.subModel of
     HomeModel ->
       { title = "Home"
-      , body =
-        [ mainPage
-        ]
+      , body = [ mainPage ]
       }
     GameModel gameModel ->
       { title = "Game"
-      , body =
-        [ gamePage gameModel
-        ]
+      , body = [ gamePage gameModel ]
       }
     NotFoundModel -> 
       { title = "Not Found"
@@ -141,11 +138,7 @@ mainPage =
     ]
 
 gamePage : Game.Model -> Html Msg
-gamePage gameModel = 
-  let
-    page = Game.view gameModel |> Html.map GotGameMsg
-  in
-    page
+gamePage gameModel = Game.view gameModel |> Html.map GotGameMsg
 
 notFoundPage : Html msg
 notFoundPage = div [ class "container"] [ h1 [] [text "Not Found"] ]
