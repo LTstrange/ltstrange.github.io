@@ -1,6 +1,7 @@
 * {
     box-sizing: border-box;
-    background-color: #cdeaf5;
+    background-color: #dbf5ff;
+    -webkit-user-select: none;
     user-select: none;
     width: 750px;
     margin: auto;
@@ -60,9 +61,20 @@ img {
 }
 
 p {
+    -webkit-user-select: text;
     user-select: text;
+    line-height: 1.5em;
 }
 
 a {
-    color: black
+    color: #1293D8;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+a .light {
+    color: #5FABDC;
 }
