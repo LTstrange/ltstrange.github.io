@@ -1,4 +1,4 @@
-module Main exposing (main, viewLink)
+module Main exposing (main)
 import Html exposing (..)
 import Html.Attributes exposing (class, src, alt, href)
 import Browser
@@ -12,7 +12,7 @@ main = Browser.application
     { init = init
     , update = update
     , view = view
-    , subscriptions = subscriptions
+    , subscriptions = \_ -> Sub.none
     , onUrlChange = UrlChanged
     , onUrlRequest = LinkClicked
     }
@@ -91,8 +91,3 @@ mainPage = div [ class "container"]
         ]
     ]
 
-
--- SUBSCRIPTIONS
-subscriptions : Model -> Sub Msg
-subscriptions _ =
-    Sub.none
