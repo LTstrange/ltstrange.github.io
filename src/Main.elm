@@ -7,116 +7,157 @@ import Url
 import Url.Parser as Parser exposing ((</>), Parser, oneOf)
 import Browser.Navigation as Nav
 import Html.Attributes exposing (style)
+import Game
 
 
--- MODEL
+-- ROUTE
 type Route
-  = Home
+  = HomePage
   | GamePage
   | NotFoundPage
 
 parseRoute : Parser (Route -> c) c
 parseRoute = 
   oneOf 
-  [ Parser.map Home Parser.top
+  [ Parser.map HomePage Parser.top
   , Parser.map GamePage (Parser.s "game")
   ]
 
+parseUrl: Url.Url -> Route
+parseUrl url = case Parser.parse parseRoute url of
+  Just r -> r
+  Nothing -> NotFoundPage
+
+-- MODEL
+
+type SubModel
+  = GameModel Game.Model
+  | HomeModel
+  | NotFoundModel
+
 type alias Model =
   { key : Nav.Key
-  , route : Route
+  , subModel : SubModel
   }
 
 init : () -> Url.Url -> Nav.Key -> ( Model, Cmd Msg )
 init _ url key =
   let
-    route = case Parser.parse parseRoute url of
-     Just r -> r
-     Nothing -> NotFoundPage
-
-    model = Model key route
+    route = parseUrl url
+    (subModel, c) = case route of
+      HomePage -> (HomeModel, Cmd.none)
+      GamePage -> 
+        let
+          (game_model, game_cmd) = Game.init
+        in 
+          (GameModel game_model, Cmd.map GotGameMsg game_cmd)
+      NotFoundPage -> (NotFoundModel, Cmd.none)
+    model = Model key subModel
   in
-  ( model, Cmd.none )
+  ( model, c )
 
 
 -- UPDATE
 type Msg
   = LinkClicked Browser.UrlRequest
   | UrlChanged Url.Url
+  | GotGameMsg Game.Msg
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-  case msg of
-    LinkClicked urlRequest ->
+  case (msg, model.subModel) of
+    (LinkClicked urlRequest, _) ->
       case urlRequest of
         Browser.Internal url ->
           ( model, Nav.pushUrl model.key (Url.toString url) )
-
         Browser.External href ->
           ( model, Nav.load href )
 
-    UrlChanged url ->
+    (UrlChanged url, _) ->
       let
-        route = case Parser.parse parseRoute url of
-          Just r -> r
-          Nothing -> NotFoundPage
+        (submodel, cmd) =  case parseUrl url of
+          HomePage -> (HomeModel, Cmd.none)
+          GamePage -> 
+            let
+              (game_model, game_cmd) = Game.init
+            in 
+            (GameModel game_model, Cmd.map GotGameMsg game_cmd)
+          NotFoundPage -> (NotFoundModel, Cmd.none)
       in
-      ( {model| route=route}, Cmd.none )
+      ( {model| subModel = submodel}, cmd )
+    (GotGameMsg gameMsg, GameModel m) -> 
+      let 
+        (newM, c) = Game.update gameMsg m 
+        cmd = Cmd.map GotGameMsg c
+      in
+        ({ model | subModel = (GameModel newM )}, cmd)
+    (_, _) -> (model, Cmd.none)
 
 
 -- VIEW
 view : Model -> Browser.Document Msg
 view model =
-  case model.route of
-    Home ->
+  case model.subModel of
+    HomeModel ->
       { title = "Home"
       , body =
         [ mainPage
         ]
       }
-    GamePage ->
+    GameModel gameModel ->
       { title = "Game"
       , body =
-        [ gamePage
+        [ gamePage gameModel
         ]
       }
-    NotFoundPage -> 
+    NotFoundModel -> 
       { title = "Not Found"
       , body = [notFoundPage]
       }
-  
-
 
 mainPage : Html msg
-mainPage = div [ class "container"] 
-    [ header [] 
-        [ h1 [] [text "Welcome to my World!"]],
-      div [] 
-        -- Show up
-        [ img [src "/assets/logo.svg", alt "logo"] []
-        , h3 [] [text "This is LTstrange!"]
-        , h4 [] [ text "Welcome to my website!"]
-        , p [] [ text " where I explore a world of coding, game development, language design, and operating systems."]
-        , p [] [ text "I am good at languages like C, C#, Rust, and Python,"]
-        , p [] [ text "and I've even crafted my own programming language called Siren."]
-        , p [] [ text "Check out my " , a [ href "https://github.com/LTstrange"] [ text "github repository"] ,text"!"]
+mainPage = 
+  div [ class "container"] 
+    [ header [] [ h1 [] [text "Welcome to my World!"]]
+    , div [] 
+      -- Show up
+      [ img [src "/assets/logo.svg", alt "logo"] []
+      , h3 [] [text "This is LTstrange!"]
+      , h4 [] [ text "Welcome to my website!"]
+      , p [] [ text " where I explore a world of coding, game development, language design, and operating systems."]
+      , p [] [ text "I am good at languages like C, C#, Rust, and Python,"]
+      , p [] [ text "and I've even crafted my own programming language called Siren."]
+      , p [] [ text "Check out my " , a [ href "https://github.com/LTstrange"] [ text "github repository"] ,text"!"]
 
-        -- Links
-        , h2 [] [ text "Links"]
-        , a [ href "/game"] [ text "game"]
+      -- Links
+      , h2 [] [ text "Links"]
+      , a [ href "/game"] [ text "game"]
 
-        -- Info
-        , h2 [] [text "Info"]
-        , p [] [ text "Email: 835422774@qq.com"]
-        , p [ style "font-size" "7px"] [ text "This website is built by elm"]
-        ]
+      -- Info
+      , h2 [] [text "Info"]
+      , p [] [ text "Email: 835422774@qq.com"]
+      , p [ style "font-size" "7px"] [ text "This website is built by elm"]
+      ]
     ]
 
-gamePage : Html msg
-gamePage = div [ class "container"] [h1 [] [text "Game"]]
+gamePage : Game.Model -> Html Msg
+gamePage gameModel = 
+  let
+    page = Game.view gameModel |> Html.map GotGameMsg
+  in
+    page
 
 notFoundPage : Html msg
 notFoundPage = div [ class "container"] [ h1 [] [text "Not Found"] ]
+
+
+-- SUBSCRIPTIONS
+subscriptions : Model -> Sub Msg
+subscriptions model = 
+  case model.subModel of
+    GameModel game_model -> Game.subscriptions game_model |> Sub.map GotGameMsg
+    HomeModel -> Sub.none
+    NotFoundModel -> Sub.none
 
 -- MAIN
 main : Program () Model Msg
@@ -124,7 +165,7 @@ main = Browser.application
     { init = init
     , update = update
     , view = view
-    , subscriptions = \_ -> Sub.none
+    , subscriptions = subscriptions
     , onUrlChange = UrlChanged
     , onUrlRequest = LinkClicked
     }
