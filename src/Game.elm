@@ -4,6 +4,7 @@ import Html.Attributes exposing (src, style, alt, class)
 import Html.Events exposing (onClick)
 import Random
 import Time
+import String exposing (left)
 
 -- MODEL
 
@@ -12,11 +13,11 @@ type RPS
   | Paper
   | Scissors
 
-type alias SvgCache =
-    { rock : Html Msg
-    , paper : Html Msg
-    , scissors : Html Msg
-    }
+rpsToString : RPS -> String
+rpsToString rps = case rps of
+  Rock -> "rock"
+  Paper -> "paper"
+  Scissors -> "scissors"
 
 type alias State =
   { left : RPS
@@ -27,15 +28,11 @@ type alias Model =
   { state : State
   , rolling : Bool
   , count : Int
-  , cache : SvgCache
   }
 
 init : (Model, Cmd Msg)
 init = 
   ( Model { left = Rock, right = Paper} False 0
-    { rock = img [ src "/assets/rps_rock.svg", style "padding" "auto", alt "rock" ] []
-    , paper = img [ src "/assets/rps_paper.svg", style "padding" "auto", alt "paper" ] []
-    ,  scissors = img [ src "/assets/rps_scissors.svg", style "padding" "auto", alt "scissors" ] [] }
   , Cmd.none
   )
 
@@ -63,26 +60,32 @@ roll = Random.uniform Rock [Paper , Scissors]
 view : Model -> Html Msg
 view model =
   let
-    left_svg = rpsToSvg model.state.left model
-    right_svg = rpsToSvg model.state.right model
+    left =  rpsToString model.state.left
+    right = rpsToString model.state.right
   in
     div [ class "container"] 
       [ h1 [style "font-size" "3em"] [ text "Game - Rock, Paper, Scissors" ]
       , div []
-        [ left_svg
-        , right_svg
+        [ img [ src ("/assets/rps_" ++ left ++ ".svg"), style "padding" "auto", alt left ] [] 
+        , img [ src ("/assets/rps_" ++ right ++ ".svg"), style "padding" "auto", alt right ] [] 
         ]
-      , button [onClick StartRolling, style "width" "120px", style "height" "50px", style "margin" "40px"] [ text "Reroll~" ]
+      , button
+        [ onClick StartRolling
+        , style "border-radius" "10px"
+        , style "border" "5px #3f3f3f solid"
+        , style "width" "120px"
+        , style "height" "50px"
+        , style "margin" "40px"
+        , style "font-size" "2em" 
+        ] [ text "Reroll~" ]
       -- cache
-      , div [ style "display" "none" ] [model.cache.rock, model.cache.scissors, model.cache.paper]
+      , div [ style "display" "none" ] 
+        [ img [ src "/assets/rps_rock.svg", style "padding" "auto", alt "rock" ] []
+        , img [ src "/assets/rps_paper.svg", style "padding" "auto", alt "paper" ] []
+        , img [ src "/assets/rps_scissors.svg", style "padding" "auto", alt "scissors" ] []
+        ]
       ]
 
-rpsToSvg : RPS -> Model -> Html Msg
-rpsToSvg rps model
-  = case rps of
-    Rock -> model.cache.rock
-    Paper -> model.cache.paper
-    Scissors -> model.cache.scissors
 
 
 
