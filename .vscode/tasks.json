@@ -9,7 +9,7 @@
                 "make",
                 "./src/Main.elm",
                 "--optimize",
-                "--output=./_site/main.js"
+                "--output=./main.js"
             ],
             "presentation": {
                 "reveal": "silent",
@@ -19,7 +19,7 @@
         {
             "label": "Uglify JavaScript",
             "type": "shell",
-            "command": "uglifyjs ./_site/main.js --compress 'pure_funcs=[F2,F3,F4,F5,F6,F7,F8,F9,A2,A3,A4,A5,A6,A7,A8,A9],pure_getters,keep_fargs=false,unsafe_comps,unsafe' --output ./_site/main.js",
+            "command": "uglifyjs ./main.js --compress 'pure_funcs=[F2,F3,F4,F5,F6,F7,F8,F9,A2,A3,A4,A5,A6,A7,A8,A9],pure_getters,keep_fargs=false,unsafe_comps,unsafe' --output ./main.js",
             "presentation": {
                 "reveal": "silent",
                 "panel": "shared"
@@ -31,7 +31,7 @@
         {
             "label": "build main.js",
             "type": "shell",
-            "command": "uglifyjs ./_site/main.js --mangle --output ./_site/main.js",
+            "command": "uglifyjs ./main.js --mangle --output ./main.js",
             "group": "build",
             "presentation": {
                 "reveal": "silent",
