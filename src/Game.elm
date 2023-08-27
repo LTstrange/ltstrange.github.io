@@ -12,6 +12,12 @@ type RPS
   | Paper
   | Scissors
 
+type alias SvgCache =
+    { rock : Html Msg
+    , paper : Html Msg
+    , scissors : Html Msg
+    }
+
 type alias State =
   { left : RPS
   , right : RPS
@@ -21,11 +27,15 @@ type alias Model =
   { state : State
   , rolling : Bool
   , count : Int
+  , cache : SvgCache
   }
 
 init : (Model, Cmd Msg)
 init = 
-  ( Model { left = Rock, right = Rock} False 0
+  ( Model { left = Rock, right = Paper} False 0
+    { rock = img [ src "/assets/rps_rock.svg", style "padding" "auto", alt "rock" ] []
+    , paper = img [ src "/assets/rps_paper.svg", style "padding" "auto", alt "paper" ] []
+    ,  scissors = img [ src "/assets/rps_scissors.svg", style "padding" "auto", alt "scissors" ] [] }
   , Cmd.none
   )
 
@@ -39,7 +49,7 @@ type Msg
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model
   = case msg of
-      Reroll _ -> if model.count < 10
+      Reroll _ -> if model.count < 200
         then ({model | count = model.count + 1},  Random.generate Change (Random.map2 State roll roll))
         else ({model | rolling = False}, Cmd.none)
       Change s -> ( { model | state=s}, Cmd.none)
@@ -53,24 +63,26 @@ roll = Random.uniform Rock [Paper , Scissors]
 view : Model -> Html Msg
 view model =
   let
-    left_src = rpsToPath model.state.left
-    right_src = rpsToPath model.state.right
+    left_svg = rpsToSvg model.state.left model
+    right_svg = rpsToSvg model.state.right model
   in
     div [ class "container"] 
       [ h1 [style "font-size" "3em"] [ text "Game - Rock, Paper, Scissors" ]
       , div []
-        [ img [ src ("/assets/" ++ left_src), style "padding" "auto", alt left_src ] []
-        , img [ src ("/assets/" ++ right_src), style "padding" "auto", alt right_src ] []
+        [ left_svg
+        , right_svg
         ]
       , button [onClick StartRolling, style "width" "120px", style "height" "50px", style "margin" "40px"] [ text "Reroll~" ]
+      -- cache
+      , div [ style "display" "none" ] [model.cache.rock, model.cache.scissors, model.cache.paper]
       ]
 
-rpsToPath : RPS -> String
-rpsToPath rps
+rpsToSvg : RPS -> Model -> Html Msg
+rpsToSvg rps model
   = case rps of
-    Rock -> "rps_rock.svg"
-    Paper -> "rps_paper.svg"
-    Scissors -> "rps_scissors.svg"
+    Rock -> model.cache.rock
+    Paper -> model.cache.paper
+    Scissors -> model.cache.scissors
 
 
 
@@ -78,4 +90,4 @@ rpsToPath rps
 
 subscriptions : Model -> Sub Msg
 subscriptions model
-  = if model.rolling then Time.every 100 Reroll else Sub.none
+  = if model.rolling then Time.every 10 Reroll else Sub.none
