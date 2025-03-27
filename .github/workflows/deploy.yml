@@ -9,6 +9,11 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    permissions:  # 新增权限配置
+      contents: write  # 允许写入仓库
+      pages: write    # 允许部署 Pages
+      id-token: write  # 关键：允许生成 OIDC 令牌
+
 
     steps:
       - name: Checkout repository
@@ -28,15 +33,12 @@ jobs:
 
       - name: Build Dioxus project (release mode)
         run: dx build --release
+      
+      - name: Verify build output
+        run: ls -R ./target/dx/github_io/release/web/public
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: website
-          path: ./target/dx/github_io/release/web/public  # 替换为 Dioxus 生成静态文件的目录（默认可能是 `dist` 或 `target/release/`）
 
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
