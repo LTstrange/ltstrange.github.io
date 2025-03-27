@@ -27,7 +27,7 @@ jobs:
         run: cargo binstall dioxus-cli
 
       - name: Build Dioxus project (release mode)
-        run: dioxus build --release
+        run: dx build --release
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
