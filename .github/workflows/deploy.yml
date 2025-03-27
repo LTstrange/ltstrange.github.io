@@ -17,7 +17,6 @@ jobs:
       - name: Install Rust
         uses: actions-rs/toolchain@v1
         with:
-          profile: minimal
           toolchain: stable
           override: true
 
@@ -31,9 +30,15 @@ jobs:
         uses: actions/configure-pages@v4
 
       - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: website
+          path: ./target/dx/github_io/release/web/public  # 替换为 Dioxus 生成静态文件的目录（默认可能是 `dist` 或 `target/release/`）
+
+      - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v2
         with:
-          path: ./target/dx/github_io/release/web/public  # 替换为 Dioxus 生成静态文件的目录（默认可能是 `dist` 或 `target/release/`）
+          path: ./target/dx/github_io/release/web/public
 
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
