@@ -36,7 +36,7 @@ jobs:
           path: ./target/dx/github_io/release/web/public  # 替换为 Dioxus 生成静态文件的目录（默认可能是 `dist` 或 `target/release/`）
 
       - name: Upload Pages Artifact
-        uses: actions/upload-pages-artifact@v2
+        uses: actions/upload-pages-artifact@v3
         with:
           path: ./target/dx/github_io/release/web/public
 
